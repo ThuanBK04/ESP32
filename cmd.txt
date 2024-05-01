@@ -1,7 +1,7 @@
-(1)ls
+(1) ls
 Xem thư mục hiện tại có những file gì
 (2) idf.py menuconfig
-Hiển thị bảng configuration
+Hiển thị bảng config
 (3) idf.py build
 Build project
 (4) idf.py flash monitor
