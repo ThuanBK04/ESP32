@@ -1,4 +1,4 @@
-(1)ls
+(1) ls
 Xem thư mục hiện tại có những file gì
 (2) idf.py menuconfig
 Hiển thị bảng configuration
