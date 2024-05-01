@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/bootloader/subproject",
+    "build_dir":          "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/rmt/led_strip/build/bootloader",
+    "config_file":        "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/rmt/led_strip/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.2.3",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/efuse/Kconfig;D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/esp32/Kconfig;D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/esp_common/Kconfig;D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/log/Kconfig;D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/bootloader/Kconfig.projbuild;D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/esptool_py/Kconfig.projbuild;D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_rom", "esptool_py", "log", "main", "micro-ecc", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/bootloader", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/bootloader_support", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/efuse", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/esp32", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/esp_common", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/esp_rom", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/esptool_py", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/log", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/bootloader/subproject/main", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/bootloader/subproject/components/micro-ecc", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/partition_table", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/soc", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/spi_flash", "D:/10_Lap_Trinh_IOT/ESP32/Code_IDF_V423/esp_idf/frameworks/esp-idf-v4.2.3/components/xtensa", "" ]
+}
