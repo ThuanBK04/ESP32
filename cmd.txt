@@ -1,0 +1,10 @@
+(1)ls
+Xem thư mục hiện tại có những file gì
+(2) idf.py menuconfig
+Hiển thị bảng config
+(3) idf.py build
+Build project
+(4) idf.py flash monitor
+flash code xuống chip
+(5) idf.py fullclean
+Clear output build
