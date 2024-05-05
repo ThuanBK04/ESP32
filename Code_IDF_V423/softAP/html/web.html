@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1> Nhap thong tin wifi </h1>
+
+<label>SSID: </label>
+<input type="text" id ="ssid"><br><br>
+<label>PASS: </label>
+<input type="text" id ="pass"><br><br>
+<button onclick="sendwifiinfo()"> Send </button>
+
+<script>
+var xhttp1 = new XMLHttpRequest();
+
+function sendwifiinfo(){
+	var ssid = document.getElementById("ssid").value();
+    var pass = document.getElementById("pass").value();
+    xhttp1.open("POST", "/POST", true);
+    xhttp1.send(ssid+'/'+pass);
+}
+</script>
+</body>
+</html>
