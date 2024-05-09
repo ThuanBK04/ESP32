@@ -9,6 +9,7 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/event_groups.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -46,6 +47,24 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
+char ssid[64];
+char pwd[32];
+EventGroupHandle_t xCreatedEventGroup;
+#define WIFI_RECV_INFO	BIT0
+
+void wifi_data_callback (char *data, int len)
+{
+    printf("%.*s\n", len, data);
+    char *pt = strtok(data, "/");
+    strcpy(ssid, pt);
+    pt = strtok(NULL, "/");
+    strcpy(pwd, pt);
+    printf ("ssid: %s, pwd: %s\n", ssid, pwd);
+    stop_webserver();
+    /* This's used to notify that the infor of wifi is received successfully */
+    xEventGroupSetBits(xCreatedEventGroup, WIFI_RECV_INFO);
+}
+
 void wifi_init_softap(void)
 {
     ESP_ERROR_CHECK(esp_netif_init());
@@ -66,7 +85,7 @@ void wifi_init_softap(void)
             .ssid = "deviot.vn",
             .ssid_len = 9,
             .channel = EXAMPLE_ESP_WIFI_CHANNEL,
-            .password = "123456789",
+            .password = "",
             .max_connection = 4,
             .authmode = WIFI_AUTH_WPA_WPA2_PSK
         },
@@ -83,6 +102,11 @@ void wifi_init_softap(void)
              EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
 
     start_webserver();
+    http_post_set_callback(wifi_data_callback);
+    /* Wait the event group, task main's also blocked until an event's triggered */
+    xEventGroupWaitBits(xCreatedEventGroup, WIFI_RECV_INFO, true, false, portMAX_DELAY);
+    /* when reaching this line, it means the infor of wifi is received successfully */
+    printf ("Received the infor of wifi successfully");
 }
 
 void app_main(void)
@@ -94,6 +118,8 @@ void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+    /* Attempt to create the event group. */
+    xCreatedEventGroup = xEventGroupCreate();
 
     ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
     wifi_init_softap();

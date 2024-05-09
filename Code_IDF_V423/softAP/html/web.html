@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <body>
 <h1> Nhap thong tin wifi </h1>
@@ -15,8 +15,8 @@ var xhttp1 = new XMLHttpRequest();
 function sendwifiinfo(){
 	var ssid = document.getElementById("ssid").value();
     var pass = document.getElementById("pass").value();
-    xhttp1.open("POST", "/POST", true);
-    xhttp1.send(ssid+'/'+pass);
+    xhttp1.open("POST", "/wifi", true);
+    xhttp1.send(ssid+'/'+pass+'/');
 }
 </script>
 </body>
