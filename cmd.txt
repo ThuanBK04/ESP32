@@ -8,3 +8,5 @@ Build project
 flash code xuống chip
 (5) idf.py fullclean
 Clear output build
+(6) idf.py erase_flash
+Xóa flash
