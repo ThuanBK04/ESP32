@@ -13,8 +13,8 @@
 var xhttp1 = new XMLHttpRequest();
 
 function sendwifiinfo(){
-	var ssid = document.getElementById("ssid").value();
-    var pass = document.getElementById("pass").value();
+	var ssid = document.getElementById("ssid").value;
+    var pass = document.getElementById("pass").value;
     xhttp1.open("POST", "/wifi", true);
     xhttp1.send(ssid+'/'+pass+'/');
 }

@@ -7,6 +7,6 @@ void start_webserver(void);
 void stop_webserver(void);
 void http_get_set_callback (void * cb);
 void http_post_set_callback (void * cb);
-void httpd_send_response(buf, buf_len);
+void httpd_send_response(char *data, int len);
 
 #endif

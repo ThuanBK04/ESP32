@@ -15,9 +15,6 @@ static http_server_handle rgb_post_handle = NULL;
 /* An HTTP GET handler */
 static esp_err_t hello_get_handler(httpd_req_t *req)
 {
-    char*  buf = "Hello World";
-    size_t buf_len = strlen(buf);
-
     // httpd_resp_set_type(req, "image/jpg");
     httpd_resp_send(req, (const char*)web_start, web_end - web_start);
 
@@ -52,6 +49,7 @@ static esp_err_t wifi_data_handler(httpd_req_t *req)
     /* Read the data for the request */
     int len = httpd_req_recv(req, buf, 100);
     http_post_handle(buf, len);
+    // printf("%s\n", buf);
 
     // End response
     httpd_resp_send_chunk(req, NULL, 0);
