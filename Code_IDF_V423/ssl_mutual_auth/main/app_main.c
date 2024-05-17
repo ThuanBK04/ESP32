@@ -81,10 +81,10 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 static void mqtt_app_start(void)
 {
     const esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = "mqtt://test.mosquitto.org:1883",
+        .uri = "mqtts://test.mosquitto.org:8884",
         .event_handle = mqtt_event_handler,
-        // .client_cert_pem = (const char *)client_cert_pem_start,
-        // .client_key_pem = (const char *)client_key_pem_start,
+        .client_cert_pem = (const char *)client_cert_pem_start,
+        .client_key_pem = (const char *)client_key_pem_start,
     };
 
     ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
