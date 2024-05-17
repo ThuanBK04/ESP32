@@ -44,22 +44,17 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
+            msg_id = esp_mqtt_client_subscribe(client, "/topic/deviot", 1);
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-            msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-            msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-            ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
             break;
+
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
             break;
 
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-            msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
+            msg_id = esp_mqtt_client_publish(client, "/topic/deviot", "thuandeptrai", 0, 0, 0);
             ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
             break;
         case MQTT_EVENT_UNSUBSCRIBED:
@@ -86,10 +81,10 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 static void mqtt_app_start(void)
 {
     const esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = "mqtts://test.mosquitto.org:8884",
+        .uri = "mqtt://test.mosquitto.org:1883",
         .event_handle = mqtt_event_handler,
-        .client_cert_pem = (const char *)client_cert_pem_start,
-        .client_key_pem = (const char *)client_key_pem_start,
+        // .client_cert_pem = (const char *)client_cert_pem_start,
+        // .client_key_pem = (const char *)client_key_pem_start,
     };
 
     ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
