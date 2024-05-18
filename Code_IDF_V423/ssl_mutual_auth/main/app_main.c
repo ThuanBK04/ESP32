@@ -29,12 +29,45 @@
 #include "esp_log.h"
 #include "mqtt_client.h"
 
+#include <json_generator.h>
+#include <json_parser.h>
+
 static const char *TAG = "MQTTS_EXAMPLE";
 
 extern const uint8_t client_cert_pem_start[] asm("_binary_client_crt_start");
 extern const uint8_t client_cert_pem_end[] asm("_binary_client_crt_end");
 extern const uint8_t client_key_pem_start[] asm("_binary_client_key_start");
 extern const uint8_t client_key_pem_end[] asm("_binary_client_key_end");
+
+typedef struct {
+    char buf[256];
+    size_t offset;
+} json_gen_test_result_t;
+
+static json_gen_test_result_t result;
+
+typedef struct{
+    int id;
+    char name[30];
+    char sex[30];
+    bool pass;
+} data_user_t;
+
+static data_user_t data_user;
+int json_parse_data(char *json, data_user_t *out_data);
+
+static void flush_str(char *buf, void *priv)
+{
+    json_gen_test_result_t *result = (json_gen_test_result_t *)priv;
+    if (result) {
+        if (strlen(buf) > sizeof(result->buf) - result->offset) {
+            printf("Result Buffer too small\r\n");
+            return;
+        }
+        memcpy(result->buf + result->offset, buf, strlen(buf));
+        result->offset += strlen(buf);
+    }
+}
 
 static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 {
@@ -67,6 +100,8 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
+            json_parse_data(event->data, &data_user);
+            printf("%d - %s - %s - %d\n", data_user.id, data_user.name, data_user.sex, data_user.pass);
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -92,6 +127,57 @@ static void mqtt_app_start(void)
     esp_mqtt_client_start(client);
 }
 
+static char* json_gen(json_gen_test_result_t *result, char *key1, int value1, \
+                    char *key2, char *value2, char *key3, char *value3, \
+                    char *key4, bool value4)
+{
+	char buf[20];
+    memset(result, 0, sizeof(json_gen_test_result_t));
+	json_gen_str_t jstr;
+	json_gen_str_start(&jstr, buf, sizeof(buf), flush_str, result);
+	json_gen_start_object(&jstr);
+	json_gen_obj_set_int(&jstr, key1, value1);
+	json_gen_obj_set_string(&jstr, key2, value2);
+	json_gen_obj_set_string(&jstr, key3, value3);
+	json_gen_obj_set_bool(&jstr, key4, value4);
+	json_gen_end_object(&jstr);
+	json_gen_str_end(&jstr);
+    return result->buf;
+}
+
+int json_parse_data(char *json, data_user_t *out_data)
+{
+	jparse_ctx_t jctx;
+	int ret = json_parse_start(&jctx, json, strlen(json));
+	if (ret != OS_SUCCESS) {
+		printf("Parser failed\n");
+		return -1;
+	}
+
+	if (json_obj_get_int(&jctx, "id", &out_data->id) != OS_SUCCESS)
+    {
+		printf("Parser failed\n");
+    }
+
+	if (json_obj_get_string(&jctx, "name", out_data->name, 30) != OS_SUCCESS)
+    {
+		printf("Parser failed\n");
+    }
+
+	if (json_obj_get_string(&jctx, "sex", out_data->sex, 30) != OS_SUCCESS)
+    {
+		printf("Parser failed\n");
+    }
+
+	if (json_obj_get_bool(&jctx, "pass", &out_data->pass) != OS_SUCCESS)
+    {
+		printf("Parser failed\n");
+    }
+
+	json_parse_end(&jctx);
+    return 0;
+}
+
 void app_main(void)
 {
     ESP_LOGI(TAG, "[APP] Startup..");
@@ -101,6 +187,11 @@ void app_main(void)
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    json_gen(&result, "id", 12, "name", "tom", "sex", "man", "pass", true);
+    printf("%s\n", result.buf);
+    json_parse_data(result.buf, &data_user);
+    printf("%d - %s - %s - %d\n", data_user.id, data_user.name, data_user.sex, data_user.pass);
 
     /* This helper function configures Wi-Fi or Ethernet, as selected in menuconfig.
      * Read "Establishing Wi-Fi or Ethernet Connection" section in
