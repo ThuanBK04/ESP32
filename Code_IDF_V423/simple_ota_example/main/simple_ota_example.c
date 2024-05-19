@@ -36,12 +36,14 @@ esp_http_client_config_t config = {
     .keep_alive_enable = true,
 };
 
+uint8_t old_duty = 0;
+
 void simple_ota_example_task(void *pvParameter)
 {
     ESP_LOGI(TAG, "Starting OTA example");
 
     esp_https_ota_config_t ota_config = {
-        .http_config = config,
+        .http_config = &config,
     };
 
     esp_https_ota_handle_t https_ota_handle = NULL;
@@ -50,10 +52,35 @@ void simple_ota_example_task(void *pvParameter)
         return ESP_FAIL;
     }
 
+    // init other object for get length
+    esp_http_client_handle_t __http_client = esp_http_client_init(&config);
+    if (__http_client == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to initialise HTTP connection");
+        goto END;
+    }   
+
+    err = esp_http_client_open(__http_client, 0);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to open HTTP connection: %s", esp_err_to_name(err));
+        goto END;
+    }
+
+    int length_image_firmware = esp_http_client_fetch_headers(__http_client);
+    ESP_LOGI(TAG, "Length Image : %d", length_image_firmware);
+
     while (1) {
         err = esp_https_ota_perform(https_ota_handle);
         if (err != ESP_ERR_HTTPS_OTA_IN_PROGRESS) {
             break;
+        }
+        int process_len = esp_https_ota_get_image_len_read(https_ota_handle);
+        uint8_t new_duty = (process_len * 100 / length_image_firmware);     // % download
+
+        if(new_duty != old_duty){
+            printf("%d %%\n", new_duty);
+            old_duty = new_duty;
         }
     }
 
@@ -62,6 +89,7 @@ void simple_ota_example_task(void *pvParameter)
     if (ret == ESP_OK) {
         esp_restart();
     } else {
+END:
         ESP_LOGE(TAG, "Firmware upgrade failed");
         vTaskDelete(NULL);
     }
