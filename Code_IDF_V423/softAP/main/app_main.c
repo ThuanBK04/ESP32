@@ -22,6 +22,7 @@
 #include "app_http_server.h"
 #include "esp_smartconfig.h"
 
+#include "app_flash.h"
 /* The examples use WiFi configuration that you can set via project configuration menu.
 
    If you'd rather not, just change the below entries to strings with
@@ -36,9 +37,9 @@ static const char *TAG = "wifi softAP";
 
 /* Select solution for connecting between esp and mobile */
 typedef enum{
-    PROV_NONE,
-    PROV_SMART_CONFIG,
-    PROV_ACCESS_POINT
+    PROV_NONE = -1,
+    PROV_SMART_CONFIG = 0,
+    PROV_ACCESS_POINT = 1
 } provision_type_t;
 
 static void smartconfig_example_task(void * parm);
@@ -293,6 +294,22 @@ void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+
+    provision_type = app_flash_get_type_config();
+    if (provision_type != 0 && provision_type != 1)
+    {
+        printf("Set to default\n");
+        app_flash_set_type_config(0);
+    }
+    else
+    {
+        printf("\ntype = %d\n", provision_type);
+        app_flash_set_type_config(1 - provision_type);
+    }
+    app_flash_set_clientid("Anh thuan dep trai");
+    char *pt = app_flash_get_clientid();
+    printf("\nclientid = %s\n", pt);
+
     /* Attempt to create the event group. */
     xCreatedEventGroup = xEventGroupCreate();
 
