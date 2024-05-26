@@ -61,6 +61,7 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
 static uint8_t char1_str[] = {0x11,0x22,0x33};
 static esp_gatt_char_prop_t a_property = 0;
 static esp_gatt_char_prop_t b_property = 0;
+void esp_send_data(uint8_t*data, uint16_t len);
 
 static esp_attr_value_t gatts_demo_char1_val =
 {
@@ -285,7 +286,7 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
 
 void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
     // if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC){
-    //     esp_log_buffer_hex(GATTS_TAG, prepare_write_env->prepare_buf, prepare_write_env->prepare_len);
+        // esp_log_buffer_hex(GATTS_TAG, prepare_write_env->prepare_buf, prepare_write_env->prepare_len);
         if (strstr((char *)prepare_write_env->prepare_buf, "on")) 
         {
             printf("-> ON LED\n");
@@ -303,6 +304,10 @@ void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble
     }
     prepare_write_env->prepare_len = 0;
 }
+
+esp_gatt_if_t g_gatts_if;
+uint8_t g_conn_id;
+bool notify_enable = false;
 
 static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param) {
     switch (event) {
@@ -376,8 +381,10 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
                             notify_data[i] = i%0xff;
                         }
                         //the size of notify_data[] need less than MTU size
-                        esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[PROFILE_A_APP_ID].char_handle,
-                                                sizeof(notify_data), notify_data, false);
+                        g_gatts_if = gatts_if;
+                        g_conn_id = param->write.conn_id;
+                        notify_enable = true;
+                        // esp_send_data((uint8_t*)"112233", 6);
                     }
                 }else if (descr_value == 0x0002){
                     if (a_property & ESP_GATT_CHAR_PROP_BIT_INDICATE){
@@ -394,6 +401,7 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
                 }
                 else if (descr_value == 0x0000){
                     ESP_LOGI(GATTS_TAG, "notify/indicate disable ");
+                    notify_enable = false;
                 }else{
                     ESP_LOGE(GATTS_TAG, "unknown descr value");
                     esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
@@ -745,5 +753,20 @@ void app_main(void)
         ESP_LOGE(GATTS_TAG, "set local  MTU failed, error code = %x", local_mtu_ret);
     }
 
-    return;
+    while(1)
+    {
+        if(notify_enable)
+        {
+            static uint8_t i = 0;
+            esp_send_data(&i, 1);
+            i++;
+        }
+        vTaskDelay(1000/portTICK_PERIOD_MS);
+    }
+}
+
+void esp_send_data(uint8_t*data, uint16_t len)
+{
+    esp_ble_gatts_send_indicate(g_gatts_if, g_conn_id, gl_profile_tab[PROFILE_B_APP_ID].char_handle,
+                            len, data, false);
 }
